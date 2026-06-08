@@ -42,7 +42,7 @@ resource "aws_s3_bucket" "tf_state" {
   }
 }
 
-# Enable Versioning so we can recover from accidental state corruption
+# Enable versioning so we can recover from accidental state corruption
 resource "aws_s3_bucket_versioning" "tf_state_versioning" {
   bucket = aws_s3_bucket.tf_state.id
   versioning_configuration {
@@ -50,7 +50,7 @@ resource "aws_s3_bucket_versioning" "tf_state_versioning" {
   }
 }
 
-# Enforce Server-Side Encryption using our Customer Managed KMS Key
+# Enforce server side encryption through KMS
 resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_encrypt" {
   bucket = aws_s3_bucket.tf_state.id
 
@@ -63,7 +63,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_encrypt"
   }
 }
 
-# Explicitly Block All Public Access (S3 Guardrail)
+# Block All Public Access 
 resource "aws_s3_bucket_public_access_block" "tf_state_acl_block" {
   bucket = aws_s3_bucket.tf_state.id
 
@@ -85,7 +85,7 @@ resource "aws_dynamodb_table" "tf_locks" {
   }
 }
 
-# Establish trust with GitHub OpenID Connect Identity Provider
+# Establish trust with GitHub and idp
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
@@ -121,6 +121,45 @@ data "aws_iam_policy_document" "github_oidc_trust" {
 resource "aws_iam_role" "github_actions_role" {
   name               = "github-actions-infrastructure-role"
   assume_role_policy = data.aws_iam_policy_document.github_oidc_trust.json
+}
+
+resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
+  name = "github-actions-s3-backend-policy"
+  role = aws_iam_role.github_actions_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        # 1. Allow mapping and listing the bucket contents
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
+        Resource = "arn:aws:s3:::helmcove-tf-state-backend"
+      },
+      {
+        # 2. Allow reading and writing state files inside the bootstrap path only
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = "arn:aws:s3:::helmcove-tf-state-backend/bootstrap/terraform.tfstate"
+      },
+      {
+        # 3. Allow envryption decrypt
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        # KMS key UUID
+        Resource = "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
+      }
+    ]
+  })
 }
 
 #Debugging Stuff
