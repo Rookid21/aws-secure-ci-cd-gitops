@@ -157,6 +157,16 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         ]
         # KMS key UUID
         Resource = "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
+      },
+      {
+        # 4. Allow managing runtime locks on the DynamoDB 
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
       }
     ]
   })
