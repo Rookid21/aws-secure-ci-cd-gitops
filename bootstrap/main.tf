@@ -23,7 +23,7 @@ provider "aws" {
 resource "aws_kms_key" "tf_state_key" {
   description             = "KMS Key for encrypting Terraform remote state"
   deletion_window_in_days = 30
-  enable_key_rotation     = true 
+  enable_key_rotation     = true
 }
 
 # Create an alias for KSM key or else it would look like 1231vfeg-1243124
@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "tf_state" {
   force_destroy = false
 
   lifecycle {
-    prevent_destroy = true 
+    prevent_destroy = true
   }
 }
 
@@ -59,7 +59,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tf_state_encrypt"
       kms_master_key_id = aws_kms_key.tf_state_key.arn
       sse_algorithm     = "aws:kms"
     }
-    bucket_key_enabled = true 
+    bucket_key_enabled = true
   }
 }
 
@@ -81,14 +81,14 @@ resource "aws_dynamodb_table" "tf_locks" {
 
   attribute {
     name = "LockID"
-    type = "S" 
+    type = "S"
   }
 }
 
 # Establish trust with GitHub OpenID Connect Identity Provider
 resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
 }
 
 # Strict Trust Policy allowing only my specific repository to use this role
