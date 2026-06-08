@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "github_oidc_trust" {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       # ENTERPRISE SECURITY: Scope down precisely to your GitHub environment
-      values = ["repo:Rookid21/aws-infra-bootstrap:*"]
+      values = ["repo:Rookid21/aws-secure-ci-cd-gitops:*"]
     }
   }
 }
