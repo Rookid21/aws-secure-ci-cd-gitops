@@ -1,0 +1,14 @@
+# Local secret files and state tracking
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*
+
+# Crash log files
+*.log
+
+# Ignore the local terraform cache directory
+.terraform/
+
+# Ignore local provider overrides
+.terraform.lock.hcl
