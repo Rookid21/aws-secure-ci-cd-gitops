@@ -175,7 +175,7 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         # 5. OIDC Metadata Inspection
         Effect = "Allow"
         Action = [
-          "iam:GetOpenIDConnectProvider" 
+          "iam:GetOpenIDConnectProvider"
         ]
         Resource = "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com"
       }
