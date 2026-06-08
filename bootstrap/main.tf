@@ -136,7 +136,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         Action = [
           "s3:ListBucket",
           "s3:GetBucketPolicy",
-          "s3:GetBucketAcl"
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS"
         ]
         Resource = "arn:aws:s3:::helmcove-tf-state-backend"
       },
@@ -157,7 +158,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "kms:Decrypt",
           "kms:GenerateDataKey",
           "kms:DescribeKey",
-          "kms:GetKeyPolicy"
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus"
         ]
         # KMS key UUID
         Resource = "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
@@ -170,7 +172,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "dynamodb:PutItem",
           "dynamodb:DeleteItem",
           "dynamodb:DescribeTable",
-          "dynamodb:DescribeContinuousBackups"
+          "dynamodb:DescribeContinuousBackups",
+          "dynamodb:DescribeTimeToLive"
         ]
         Resource = "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
       },
