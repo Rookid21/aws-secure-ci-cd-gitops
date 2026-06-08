@@ -1,0 +1,53 @@
+name: "Terraform Infrastructure Deployment"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# grants the person that executes permission to request the OIDC JWT token from GitHub
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: "Terraform Run"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bootstrap
+
+    steps:
+      # 1. Check out your repository code to the temporary GitHub runner instance
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Securely assume your AWS IAM OIDC Role using Web Identity Token exchange
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::670523234679:role/github-actions-infrastructure-role
+          aws-region: us-west-2
+          audience: sts.amazonaws.com
+
+      # 3. Install the Terraform binary onto the runner
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      # 4. Verify that code style and indentation are correct
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      # 5. Connect to your live AWS S3 remote backend
+      - name: Terraform Init
+        run: terraform init
+
+      # 6. Run a dry run plan simulation to verify connectivity and access
+      - name: Terraform Plan
+        run: terraform plan -no-color
