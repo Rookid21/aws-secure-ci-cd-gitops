@@ -135,7 +135,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         Effect = "Allow"
         Action = [
           "s3:ListBucket",
-          "s3:GetBucketPolicy"
+          "s3:GetBucketPolicy",
+          "s3:GetBucketAcl"
         ]
         Resource = "arn:aws:s3:::helmcove-tf-state-backend"
       },
@@ -155,7 +156,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         Action = [
           "kms:Decrypt",
           "kms:GenerateDataKey",
-          "kms:DescribeKey"
+          "kms:DescribeKey",
+          "kms:GetKeyPolicy"
         ]
         # KMS key UUID
         Resource = "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
@@ -167,7 +169,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:DeleteItem",
-          "dynamodb:DescribeTable"
+          "dynamodb:DescribeTable",
+          "dynamodb:DescribeContinuousBackups"
         ]
         Resource = "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
       },
@@ -175,7 +178,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         # 5. OIDC Metadata Inspection
         Effect = "Allow"
         Action = [
-          "iam:GetOpenIDConnectProvider"
+          "iam:GetOpenIDConnectProvider",
+          "iam:GetRole"
         ]
         Resource = "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com"
       }
