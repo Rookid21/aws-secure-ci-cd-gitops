@@ -140,7 +140,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "s3:GetBucketCORS",
           "s3:GetBucketWebsite",
           "s3:GetObject",
-          "s3:GetBucketVersioning"
+          "s3:GetBucketVersioning",
+          "s3:GetAccelerateConfiguration"
         ],
         "Resource" : [
           "arn:aws:s3:::helmcove-tf-state-backend",
@@ -188,7 +189,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         "Action" : [
           "iam:GetOpenIDConnectProvider",
           "iam:GetRole",
-          "iam:ListRolePolicies"
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy"
         ],
         "Resource" : [
           "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com",
