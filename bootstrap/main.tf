@@ -155,7 +155,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "s3:GetReplicationConfiguration",
           "s3:GetEncryptionConfiguration",
           "s3:GetBucketObjectLockConfiguration",
-          "s3:GetBucketPublicAccessBlock"
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetBucketTagging"
         ]
         Resource = "arn:aws:s3:::helmcove-tf-state-backend"
       },
@@ -199,7 +200,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "dynamodb:DeleteItem",
           "dynamodb:DescribeTable",
           "dynamodb:DescribeContinuousBackups",
-          "dynamodb:DescribeTimeToLive"
+          "dynamodb:DescribeTimeToLive",
+          "dynamodb:ListTagsOfResource"
         ]
         Resource = "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
       },
