@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "github_oidc_trust" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      # ENTERPRISE SECURITY: Scope down precisely to your GitHub environment
+      # Scopes to only my specific GitHub
       values = ["repo:Rookid21/aws-secure-ci-cd-gitops:*"]
     }
   }
@@ -128,63 +128,63 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
   role = aws_iam_role.github_actions_role.id
 
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        # 1. Allow mapping and listing the bucket contents
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetBucketPolicy",
-          "s3:GetBucketAcl",
-          "s3:GetBucketCORS"
-        ]
-        Resource = "arn:aws:s3:::helmcove-tf-state-backend"
-      },
-      {
-        # 2. Allow reading and writing state files inside the bootstrap path only
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
-        ]
-        Resource = "arn:aws:s3:::helmcove-tf-state-backend/bootstrap/terraform.tfstate"
-      },
-      {
-        # 3. Allow envryption decrypt
-        Effect = "Allow"
-        Action = [
-          "kms:Decrypt",
-          "kms:GenerateDataKey",
-          "kms:DescribeKey",
-          "kms:GetKeyPolicy",
-          "kms:GetKeyRotationStatus"
-        ]
-        # KMS key UUID
-        Resource = "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
-      },
-      {
-        # 4. Allow managing runtime locks on the DynamoDB 
-        Effect = "Allow"
-        Action = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:DescribeTable",
-          "dynamodb:DescribeContinuousBackups",
-          "dynamodb:DescribeTimeToLive"
-        ]
-        Resource = "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
-      },
-      {
-        # 5. OIDC Metadata Inspection
-        Effect = "Allow"
-        Action = [
-          "iam:GetOpenIDConnectProvider",
-          "iam:GetRole"
-        ]
-        Resource = "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com"
+"Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "S3BackendAndStateInspection",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCORS",
+                "s3:GetBucketWebsite",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::helmcove-tf-state-backend",
+                "arn:aws:s3:::helmcove-tf-state-backend/*"
+            ]
+        },
+        {
+            "Sid": "KMSStateDecryptionAndInspection",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListResourceTags"
+            ],
+            "Resource": "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
+        },
+        {
+            "Sid": "DynamoDBLockTableOperations",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTagsOfResource"
+            ],
+            "Resource": "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
+        },
+        {
+            "Sid": "IAMInfrastructureSelfInspection",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetOpenIDConnectProvider",
+                "iam:GetRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com",
+                "arn:aws:iam::670523234679:role/github-actions-infrastructure-role",
+                "arn:aws:iam::670523234679:role/github-actions-infrastructure-role*"
+            ]
       }
     ]
   })
