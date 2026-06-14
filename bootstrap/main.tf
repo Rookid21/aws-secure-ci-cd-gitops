@@ -139,7 +139,8 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
           "s3:GetBucketAcl",
           "s3:GetBucketCORS",
           "s3:GetBucketWebsite",
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:GetBucketVersioning"
         ],
         "Resource" : [
           "arn:aws:s3:::helmcove-tf-state-backend",
@@ -160,6 +161,14 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         "Resource" : "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
       },
       {
+        "Sid" : "KMSAccountAliasListing",
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:ListAliases"
+        ],
+        "Resource" : "*"
+      },
+      {
         "Sid" : "DynamoDBLockTableOperations",
         "Effect" : "Allow",
         "Action" : [
@@ -178,14 +187,17 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
         "Effect" : "Allow",
         "Action" : [
           "iam:GetOpenIDConnectProvider",
-          "iam:GetRole"
+          "iam:GetRole",
+          "iam:ListRolePolicies"
         ],
         "Resource" : [
           "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com",
           "arn:aws:iam::670523234679:role/github-actions-infrastructure-role",
           "arn:aws:iam::670523234679:role/github-actions-infrastructure-role*"
         ]
+
       }
+
     ]
   })
 }
