@@ -128,63 +128,63 @@ resource "aws_iam_role_policy" "github_actions_s3_backend_policy" {
   role = aws_iam_role.github_actions_role.id
 
   policy = jsonencode({
-"Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "S3BackendAndStateInspection",
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket",
-                "s3:GetBucketPolicy",
-                "s3:GetBucketAcl",
-                "s3:GetBucketCORS",
-                "s3:GetBucketWebsite",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::helmcove-tf-state-backend",
-                "arn:aws:s3:::helmcove-tf-state-backend/*"
-            ]
-        },
-        {
-            "Sid": "KMSStateDecryptionAndInspection",
-            "Effect": "Allow",
-            "Action": [
-                "kms:Decrypt",
-                "kms:GenerateDataKey",
-                "kms:DescribeKey",
-                "kms:GetKeyPolicy",
-                "kms:GetKeyRotationStatus",
-                "kms:ListResourceTags"
-            ],
-            "Resource": "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
-        },
-        {
-            "Sid": "DynamoDBLockTableOperations",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:DescribeContinuousBackups",
-                "dynamodb:DescribeTimeToLive",
-                "dynamodb:ListTagsOfResource"
-            ],
-            "Resource": "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
-        },
-        {
-            "Sid": "IAMInfrastructureSelfInspection",
-            "Effect": "Allow",
-            "Action": [
-                "iam:GetOpenIDConnectProvider",
-                "iam:GetRole"
-            ],
-            "Resource": [
-                "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com",
-                "arn:aws:iam::670523234679:role/github-actions-infrastructure-role",
-                "arn:aws:iam::670523234679:role/github-actions-infrastructure-role*"
-            ]
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "S3BackendAndStateInspection",
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:ListBucket",
+          "s3:GetBucketPolicy",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketWebsite",
+          "s3:GetObject"
+        ],
+        "Resource" : [
+          "arn:aws:s3:::helmcove-tf-state-backend",
+          "arn:aws:s3:::helmcove-tf-state-backend/*"
+        ]
+      },
+      {
+        "Sid" : "KMSStateDecryptionAndInspection",
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Decrypt",
+          "kms:GenerateDataKey",
+          "kms:DescribeKey",
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus",
+          "kms:ListResourceTags"
+        ],
+        "Resource" : "arn:aws:kms:us-west-2:670523234679:key/6d626b57-ff5c-4122-985e-a91b29f25cef"
+      },
+      {
+        "Sid" : "DynamoDBLockTableOperations",
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:DescribeTable",
+          "dynamodb:DescribeContinuousBackups",
+          "dynamodb:DescribeTimeToLive",
+          "dynamodb:ListTagsOfResource"
+        ],
+        "Resource" : "arn:aws:dynamodb:us-west-2:670523234679:table/helmcove-tf-state-locks"
+      },
+      {
+        "Sid" : "IAMInfrastructureSelfInspection",
+        "Effect" : "Allow",
+        "Action" : [
+          "iam:GetOpenIDConnectProvider",
+          "iam:GetRole"
+        ],
+        "Resource" : [
+          "arn:aws:iam::670523234679:oidc-provider/token.actions.githubusercontent.com",
+          "arn:aws:iam::670523234679:role/github-actions-infrastructure-role",
+          "arn:aws:iam::670523234679:role/github-actions-infrastructure-role*"
+        ]
       }
     ]
   })
